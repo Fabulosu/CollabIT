@@ -1,1 +1,2 @@
+# CollabIT
 CollabIT is a dynamic and inclusive open-source online platform designed to bring developers together and foster collaboration within the vibrant realm of open source projects. In the ever-expanding landscape of software development, finding the right project to contribute to can be a challenging task. CollabIT aims to streamline this process, connecting passionate developers with projects that align with their skills and interests.
