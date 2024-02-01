@@ -3,8 +3,18 @@ import {
     GithubSignInButton,
     GoogleSignInButton,
 } from "@/components/ui/authButtons";
+import { authConfig } from "@/lib/auth";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 
-export default function Page() {
+export default async function Page() {
+
+    const session = await getServerSession(authConfig);
+
+    console.log("Session: ", session);
+
+    if (session) return redirect("/explore");
+
     return (
         <div className="w-full flex flex-col items-center justify-center min-h-screen py-2">
             <div className="flex flex-col items-center mt-10 p-10 shadow-md">

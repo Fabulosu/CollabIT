@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import { dbConnect } from './database';
-import * as db from './dbModels';
+import { UserModel } from './dbModels';
 import { NextAuthOptions, User, getServerSession } from "next-auth";
 import { useSession } from "next-auth/react";
 import { redirect, useRouter } from "next/navigation";
@@ -11,6 +11,9 @@ import CredentialsProvider from "next-auth/providers/credentials";
 // import GoogleProvider from "next-auth/providers/google";
 
 export const authConfig: NextAuthOptions = {
+    pages: {
+        newUser: '/explore'
+    },
     providers: [
         CredentialsProvider({
             name: "credentials",
@@ -26,28 +29,37 @@ export const authConfig: NextAuthOptions = {
                 if (!credentials || !credentials.email || !credentials.password)
                     return null;
                 await dbConnect();
-                const user = await db.User.findOne({ email: credentials.email });
+                const user = await UserModel.findOne({ email: credentials.email });
 
                 if (user && bcrypt.compareSync(credentials.password, user.password)) {
-                    const { ...data } = user
-                    return data as User;
+                    return user
                 }
 
                 return null;
             },
         }),
     ],
+    callbacks: {
+        async signIn({ user, account, profile, email, credentials }) {
+            if (user) {
+                return true
+            }
+            return false
+        },
+        async redirect({ url, baseUrl }) {
+            if (url.startsWith(baseUrl)) return url
+            else if (url.startsWith('/')) return new URL(url, baseUrl).toString()
+            return baseUrl
+        },
+        async session({ session, token, user }) {
+            if (token) {
+                await dbConnect();
+                const user = await UserModel.findOne({ email: session.user.email });
+                session.user.username = user.username;
+                session.user.id = user._id.toString();
+            }
+            return session
+        },
+    },
+    debug: true,
 };
-
-export async function loginIsRequiredServer() {
-    const session = await getServerSession(authConfig);
-    if (!session) return redirect("/");
-}
-
-export function loginIsRequiredClient() {
-    if (typeof window !== "undefined") {
-        const session = useSession();
-        const router = useRouter();
-        if (!session) router.push("/");
-    }
-}
