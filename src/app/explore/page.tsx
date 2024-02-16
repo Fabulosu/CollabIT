@@ -1,36 +1,50 @@
 "use client"
-import { useSession, getSession } from "next-auth/react"
-// import { authConfig } from "@/lib/auth";
-// import { getServerSession } from "next-auth";
-// import { redirect } from "next/navigation";
+import { useSession } from 'next-auth/react';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+import { useClient } from '../../hooks/useClient'; // Import useClient hook
 
-export default function FeedPage() {
-
-    const { data: session, status } = useSession()
-
-    if (status === "loading") {
-        return <p>Loading...</p>
-    }
-
-    // if (status === "unauthenticated") {
-    //     return redirect("/login")
-    // }
-
-    // const session = await getServerSession(authConfig);
-
-    console.log("Session: ", session);
-    if (session) {
-        return (
-            <div className="bg-neutral-900 flex items-center justify-center h-screen">
-                <h1 className="font-bold font-sans text-white">Welcome back, {session?.user?.name}!</h1>
-            </div>
-        );
-    } else {
-        return (
-            <div className="bg-red-900 flex items-center justify-center h-screen">
-                <h1 className="font-bold font-sans text-white">Not authorized!</h1>
-            </div>
-        );
-    }
-
+interface Project {
+    _id: string;
+    project_name: string;
+    project_description: string;
+    // Add more fields if necessary
 }
+
+const ExplorePage = () => {
+    const { data: session, status } = useSession();
+    const [projects, setProjects] = useState<Project[]>([]);
+    const isClient = useClient(); // Determine if component is being rendered on the client side
+
+    useEffect(() => {
+        if (isClient) { // Check if component is being rendered on the client side
+            const fetchProjects = async () => {
+                try {
+                    const response = await axios.get<Project[]>('/api/projects');
+                    setProjects(response.data);
+                } catch (error) {
+                    console.error('Error fetching projects:', error);
+                }
+            };
+
+            fetchProjects();
+        }
+    }, [isClient]); // Run useEffect only on client side
+
+    if (status === 'loading') return <div>Loading...</div>;
+
+    if (!session) return <div>You need to be logged in to access this page. Please <a href="/login">login</a>.</div>;
+
+    return (
+        <div className="grid-container">
+            {projects.map(project => (
+                <div key={project._id} className="project-card">
+                    <h2>{project.project_name}</h2>
+                    <p>{project.project_description}</p>
+                </div>
+            ))}
+        </div>
+    );
+};
+
+export default ExplorePage;

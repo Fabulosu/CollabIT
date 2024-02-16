@@ -1,31 +1,43 @@
-import {
-    CredentialsSignInButton,
-    GithubSignInButton,
-    GoogleSignInButton,
-} from "@/components/ui/authButtons";
-import { authConfig } from "@/lib/auth";
-import { getServerSession } from "next-auth";
+"use client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { signIn, useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
+import { useRef } from "react";
 
-export default async function Page() {
+type Props = {
+    searchParams?: Record<"callbackUrl" | "error", string>;
+}
 
-    const session = await getServerSession(authConfig);
+export default function LoginPage(props: Props) {
 
-    console.log("Session: ", session);
+    const email = useRef("");
+    const pass = useRef("");
 
-    if (session) return redirect("/explore");
+    const { data: session, status } = useSession();
 
+    if (session) return redirect('/explore');
+
+    if (status === "loading") return <div>Loading...</div>
+
+    const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        await signIn("credentials", {
+            email: email.current,
+            password: pass.current,
+            redirect: true,
+            callbackUrl: "http://localhost:3000/explore"
+        })
+    }
     return (
-        <div className="w-full flex flex-col items-center justify-center min-h-screen py-2">
-            <div className="flex flex-col items-center mt-10 p-10 shadow-md">
-                <h1 className="mt-10 mb-4 text-4xl font-bold">Sign In</h1>
-                <GoogleSignInButton />
-                <GithubSignInButton />
-                <span className="text-2xl font-semibold text-white text-center mt-8">
-                    Or
-                </span>
-                <CredentialsSignInButton />
-            </div>
-        </div>
+        <div className="bg-neutral-900 flex items-center justify-center h-screen w-screen">
+            <form onSubmit={onSubmit} className="w-3/12 h-1/2 bg-neutral-800 flex items-center justify-center flex-col">
+                <h1 className="font-bold text-3xl text-white">LOGIN</h1>
+                <Input type="email" name="email" placeholder="Email" className="w-2/3 mt-20" onChange={(e) => (email.current = e.target.value)}></Input>
+                <Input type="password" name="password" placeholder="Password" className="w-2/3 mt-5" onChange={(e) => (pass.current = e.target.value)}></Input>
+                {!!props.searchParams?.error && <p className="text-red-600">Authentication failed!</p>}
+                <Button type="submit" variant="success" className="w-40 mt-20">Login</Button>
+            </form>
+        </div >
     );
 }

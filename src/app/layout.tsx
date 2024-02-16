@@ -3,6 +3,7 @@ import './globals.css'
 import { authConfig } from '@/lib/auth';
 import SessionProvider from '@/lib/SessionProvider';
 
+
 export default async function RootLayout({
   children,
 }: {
