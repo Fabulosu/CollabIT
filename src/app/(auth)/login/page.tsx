@@ -27,7 +27,7 @@ export default function LoginPage(props: Props) {
             password: pass.current,
             redirect: true,
             callbackUrl: "http://localhost:3000/explore"
-        })
+        });
     }
     return (
         <div className="bg-neutral-900 flex items-center justify-center h-screen w-screen">

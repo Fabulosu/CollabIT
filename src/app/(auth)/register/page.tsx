@@ -1,23 +1,73 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { authConfig } from "@/lib/auth";
-import { getServerSession } from "next-auth";
+import axios from "axios";
+import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
+import { useRef, useState } from "react";
+import { useRouter } from 'next/navigation';
 
-export default async function RegisterPage() {
+export default function RegisterPage() {
 
-    const session = await getServerSession(authConfig);
+    const [errorMessage, setErrorMessage] = useState('');
+    const usernameRef = useRef<HTMLInputElement>(null);
+    const emailRef = useRef<HTMLInputElement>(null);
+    const passRef = useRef<HTMLInputElement>(null);
+    const cpassRef = useRef<HTMLInputElement>(null);
 
-    console.log("Session: ", session);
+    const router = useRouter();
 
-    if (session) return redirect("/explore");
+    const { data: session, status } = useSession();
 
+    if (session) return redirect('/explore');
+
+    if (status === "loading") return <div className="font-bold text-white">Loading...</div>
+
+    const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        const username = usernameRef.current?.value;
+        const email = emailRef.current?.value;
+        const password = passRef.current?.value;
+        const cpass = cpassRef.current?.value;
+
+        if (username && email && password && cpass) {
+            try {
+                if (password.length >= 8) {
+                    if (password === cpass) {
+                        const response = await axios.post("/api/user/register", { username, email, password });
+
+                        // console.log(response.data)
+                        if (response.data.success) {
+                            router.push('/login');
+                        } else {
+                            setErrorMessage(response.data.message);
+                        }
+                    } else {
+                        setErrorMessage("Passwords do not match!");
+                    }
+                } else {
+                    setErrorMessage("The password must be at least 8 characters!");
+                }
+
+            } catch (error) {
+                console.error('Error creating account:', error);
+            }
+
+        }
+    }
     return (
-        <div className="flex flex-col items-center mt-10 p-10 shadow-md bg-neutral-800">
-            <h1 className="mt-10 mb-4 text-4xl font-bold text-white">Register</h1>
-            <Input placeholder="youremail@email.com" /><br></br>
-            <Input placeholder="password" />
-            <Button>Register</Button>
-        </div>
+        <div className="bg-neutral-900 flex items-center justify-center h-screen w-screen">
+            <form onSubmit={onSubmit} className="w-3/12 h-1/2 bg-neutral-800 flex items-center justify-center flex-col">
+                <h1 className="font-bold text-2xl text-white">CREATE AN ACCOUNT</h1>
+                <hr className="w-full mt-6 border-2 border-neutral-900" />
+                <Input type="text" name="username" placeholder="Username" className="w-2/3 mt-14" ref={usernameRef} required={true}></Input>
+                <Input type="email" name="email" placeholder="Email" className="w-2/3 mt-5" ref={emailRef}></Input>
+                <Input type="password" name="password" placeholder="Password" className="w-2/3 mt-5" ref={passRef}></Input>
+                <Input type="password" name="cpassword" placeholder="Confirm your password" className="w-2/3 mt-5" ref={cpassRef}></Input>
+                {errorMessage && <p className="text-red-600 mt-4 -mb-4 font-bold">{errorMessage}</p>}
+                <Button type="submit" variant="success" className="w-40 mt-10">REGISTER</Button>
+            </form>
+        </div >
     );
 }
