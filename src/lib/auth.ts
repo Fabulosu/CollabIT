@@ -12,7 +12,8 @@ import CredentialsProvider from "next-auth/providers/credentials";
 
 export const authConfig: NextAuthOptions = {
     pages: {
-        newUser: '/explore'
+        newUser: '/explore',
+        signIn: '/login'
     },
     providers: [
         CredentialsProvider({
