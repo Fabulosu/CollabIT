@@ -6,7 +6,7 @@ import * as bcrypt from "bcrypt";
 
 export async function POST(req: Request, res: NextResponse) {
     const { username, email, password } = await req.json();
-    console.log(`${username} | ${email} | ${password}`)
+    // console.log(`${username} | ${email} | ${password}`)
 
     await dbConnect();
     const user = await UserModel.findOne({ $or: [{ username }, { email }] });
@@ -18,7 +18,7 @@ export async function POST(req: Request, res: NextResponse) {
             password: hashedPass,
             activated: 0
         });
-        console.log(newUser);
+        // console.log(newUser);
         await newUser.save();
         return NextResponse.json({ success: true, message: "Account created successfully!" }, { status: 200 });
     } else {
