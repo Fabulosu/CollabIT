@@ -4,11 +4,11 @@ export default async function ProjectPage({ params }: { params: { projectname: S
 
     let projectName = (params.projectname).replaceAll("-", " ").replaceAll("%20", " ").toLowerCase();
 
-    console.log(projectName)
+    // console.log(projectName)
 
     const project = await ProjectModel.findOne({ project_name: { $regex: projectName, $options: "i" } });
 
-    console.log("Params: ", params.projectname);
+    // console.log("Params: ", params.projectname);
 
     if (project) {
         return (

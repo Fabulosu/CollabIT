@@ -23,6 +23,7 @@ const userSchema = new Schema({
 const projectSchema = new Schema({
     project_name: reqString,
     project_description: reqString,
+    project_logo: String,
     project_owner: { type: Object, required: true },
     project_link: reqString,
     project_techstack: Array,
