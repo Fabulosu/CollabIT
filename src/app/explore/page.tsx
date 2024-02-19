@@ -3,9 +3,12 @@ import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useClient } from '../../hooks/useClient'; // Import useClient hook
+import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
 
 interface Project {
     _id: string;
+    project_logo: string;
     project_name: string;
     project_description: string;
     // Add more fields if necessary
@@ -15,6 +18,8 @@ const ExplorePage = () => {
     const { data: session, status } = useSession();
     const [projects, setProjects] = useState<Project[]>([]);
     const isClient = useClient(); // Determine if component is being rendered on the client side
+
+    const router = useRouter();
 
     useEffect(() => {
         if (isClient) { // Check if component is being rendered on the client side
@@ -35,14 +40,23 @@ const ExplorePage = () => {
 
     if (!session) return <div>You need to be logged in to access this page. Please <a href="/login">login</a>.</div>;
 
+    const handleClick = (project_name: string) => {
+        // console.log(project_name)
+        router.push(`/project/${project_name.replaceAll(" ", "-")}`);
+    }
+
     return (
-        <div className="grid-container">
-            {projects.map(project => (
-                <div key={project._id} className="project-card">
-                    <h2>{project.project_name}</h2>
-                    <p>{project.project_description}</p>
-                </div>
-            ))}
+        <div className="bg-neutral-900 flex justify-center items-center h-screen w-screen">
+            <div className='grid grid-cols-3 justify-around'>
+                {projects.map(project => (
+                    <div key={project._id} className="h-40 w-3/4 flex justify-center items-center flex-col mt-40">
+                        <img src={project.project_logo} width={64} />
+                        <h2 className='font-bold text-xl text-white pt-4'>{project.project_name}</h2>
+                        <p className='text-white'>{project.project_description}</p>
+                        <Button onClick={() => handleClick(project.project_name)}>Show Project Page</Button>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 };
