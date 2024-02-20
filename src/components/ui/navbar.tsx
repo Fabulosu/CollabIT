@@ -18,10 +18,6 @@ const Navbar = () => {
         <nav className="bg-neutral-900 flex justify-around top-0 sticky overflow-hidden items-center pt-2 pb-2 h-16 border-b-2 border-b-neutral-800">
             <a href="/"><img src="CollabIT.png" width={50} className="rounded-full" /></a>
             {status === 'authenticated' && session && (
-                // <div className="flex items-center hover:bg-neutral-500 p-1 transition-all cursor-pointer">
-                //     <h2 className="text-white font-bold text-xl">{session.user.username}</h2>
-                //     <img className="rounded-full ml-3" width={40} src={session.user.avatar ? session.user.avatar : "https://i.imgur.com/qV84j5Z.png"} />
-                // </div>
                 <DropdownMenu>
                     <DropdownMenuTrigger className="border-none outline-none">
                         <div className="flex items-center hover:bg-neutral-800 p-1 transition-all cursor-pointer rounded-sm">
