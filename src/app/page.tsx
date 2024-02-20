@@ -1,10 +1,9 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-
 export default function Page() {
   return (
-    <div className="bg-neutral-900 flex items-center justify-center h-screen">
-      <h1 className="font-bold text-lg text-white">CollabIT</h1>
+    <div className="bg-neutral-900 flex-grow flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-white">CollabIT</h1>
+      </div>
     </div>
   );
 }

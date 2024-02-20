@@ -58,6 +58,8 @@ export const authConfig: NextAuthOptions = {
                 const user = await UserModel.findOne({ email: session.user.email });
                 session.user.username = user.username;
                 session.user.id = user._id.toString();
+                session.user.name = user.name;
+                session.user.avatar = user.avatar;
             }
             return session
         },

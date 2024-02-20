@@ -42,11 +42,11 @@ const ExplorePage = () => {
 
     const handleClick = (project_name: string) => {
         // console.log(project_name)
-        router.push(`/project/${project_name.replaceAll(" ", "-")}`);
+        router.push(`/explore/project/${project_name.replaceAll(" ", "-")}`);
     }
 
     return (
-        <div className="bg-neutral-900 flex justify-center items-center h-screen w-screen">
+        <div className="bg-neutral-900 flex justify-center items-center h-full w-screen">
             <div className='grid grid-cols-3 justify-around'>
                 {projects.map(project => (
                     <div key={project._id} className="h-40 w-3/4 flex justify-center items-center flex-col mt-40">

@@ -10,6 +10,7 @@ const userSchema = new Schema({
     password: reqString,
     email: reqString,
     activated: { type: Number, required: true },
+    avatar: String,
     name: String,
     date_of_birth: String,
     country: String,
