@@ -10,6 +10,7 @@ const userSchema = new Schema({
     password: reqString,
     email: reqString,
     activated: { type: Number, required: true },
+    uuid: { type: String, required: true },
     avatar: String,
     name: String,
     date_of_birth: String,
@@ -25,7 +26,7 @@ const projectSchema = new Schema({
     project_name: reqString,
     project_description: reqString,
     project_logo: String,
-    project_owner: { type: Object, required: true },
+    project_owner: { type: Schema.Types.ObjectId, required: true, ref: 'users' },
     project_link: reqString,
     project_techstack: Array,
     project_contributors: Array
