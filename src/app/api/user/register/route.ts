@@ -2,7 +2,7 @@ import { dbConnect } from "@/lib/database"
 import { UserModel } from "@/lib/dbModels";
 import { NextResponse } from "next/server";
 import * as bcrypt from "bcrypt";
-
+const { v4: uuidv4 } = require('uuid');
 
 export async function POST(req: Request, res: NextResponse) {
     const { username, email, password } = await req.json();
@@ -16,7 +16,8 @@ export async function POST(req: Request, res: NextResponse) {
             username: username,
             email: email,
             password: hashedPass,
-            activated: 0
+            activated: 0,
+            uuid: uuidv4()
         });
         // console.log(newUser);
         await newUser.save();
